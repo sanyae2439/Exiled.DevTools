@@ -14,16 +14,20 @@ namespace Exiled.DevTools
 	{
 		public override string Name => "Exiled.DevTools";
 		public override string Author => "sanyae2439";
-		public override string Prefix => "exdev";
+		public override string Prefix => "exiled_devtools";
 		public override PluginPriority Priority => PluginPriority.Highest;
 		public override Version Version => new Version(Assembly.GetName().Version.Major, Assembly.GetName().Version.Minor, Assembly.GetName().Version.Build);
 		public override Version RequiredExiledVersion => new Version(2, 1, 30);
 
-		public Harmony Harmony;
+		public static DevTools Instance { get; private set; }
+		public Harmony Harmony { get; private set; }
+
 		private readonly Dictionary<EventInfo, Delegate> _DynamicHandlers = new Dictionary<EventInfo, Delegate>();
 
 		public override void OnEnabled()
 		{
+			Instance = this;
+
 			AddEventHandlers();
 			RegistPatch();
 
@@ -32,9 +36,11 @@ namespace Exiled.DevTools
 
 		public override void OnDisabled()
 		{
+			Instance = null;
+
 			AddEventHandlers();
 			RegistPatch();
-
+	
 			base.OnDisabled();
 		}
 
@@ -43,7 +49,7 @@ namespace Exiled.DevTools
 			foreach(var eventClass in Events.Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
 				foreach(EventInfo eventInfo in eventClass.GetEvents())
 				{
-					if(this.Config.DisabledEvents.Contains(eventInfo.Name)) continue;
+					if(this.Config.DisabledLoggingEvents.Contains(eventInfo.Name)) continue;
 
 					Delegate handler = null;
 					if(eventInfo.EventHandlerType.GenericTypeArguments.Any())
@@ -99,12 +105,12 @@ namespace Exiled.DevTools
 
 		public static void MessageHandler<T>(T ev) where T : EventArgs
 		{
-			string message = $"\n[{ev.GetType().Name.Replace("EventArgs", string.Empty)}]\n";
+			string message = $"[{ev.GetType().Name.Replace("EventArgs", string.Empty)}]\n";
 			foreach(var propertyInfo in ev.GetType().GetProperties())
 				message += $"{propertyInfo.Name}({propertyInfo.PropertyType}) : {propertyInfo.GetValue(ev)}\n";
 			Log.Debug(message.TrimEnd('\n'));
 		}
 
-		public static void MessageHandlerForEmptyArgs(Events.Events.CustomEventHandler _) => Log.Debug($"\n[{new StackFrame(2).GetMethod().Name}]");
+		public static void MessageHandlerForEmptyArgs(Events.Events.CustomEventHandler _) => Log.Debug($"[{new StackFrame(2).GetMethod().Name}]");
 	}
 }

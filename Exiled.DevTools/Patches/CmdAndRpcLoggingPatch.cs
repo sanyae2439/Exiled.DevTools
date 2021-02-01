@@ -2,18 +2,16 @@
 using HarmonyLib;
 using Mirror;
 
-namespace ExiledEventsDebugger.Patches
+namespace Exiled.DevTools
 {
 	[HarmonyPatch(typeof(NetworkBehaviour), "GetInvokerForHash")]
 	public static class CmdAndRpcLoggingPatch
 	{
-		public static void Postfix(ref NetworkBehaviour.Invoker invoker)
+		public static void Postfix(NetworkBehaviour.Invoker invoker)
 		{
-			var methodname = invoker.invokeFunction.GetMethodName().Substring(10).Insert(0, "Call");
-			Log.Debug($"{methodname}\n");
-
-
-			if(methodname == "InvokeCmdCmdAltIsActive" || methodname == "InvokeCmdCmdSyncItem" || methodname == "InvokeRpcRpcBlinkTime" || methodname == "InvokeRpcRpcPlaySound") return;
+			var methodname = invoker.invokeFunction.GetMethodName().Substring(9);
+			if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodname)) return;
+			Log.Debug($"[{methodname}]");
 		}
 	}
 }

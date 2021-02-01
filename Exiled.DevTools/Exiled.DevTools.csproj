@@ -48,34 +48,44 @@
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lib.Harmony.2.0.4\lib\net472\0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.API, Version=2.1.30.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.2.1.30\lib\net472\Exiled.API.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Bootstrap, Version=2.1.30.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.2.1.30\lib\net472\Exiled.Bootstrap.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Events, Version=2.1.30.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.2.1.30\lib\net472\Exiled.Events.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Loader, Version=2.1.30.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.2.1.30\lib\net472\Exiled.Loader.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Permissions, Version=2.1.30.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.2.1.30\lib\net472\Exiled.Permissions.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Updater, Version=3.0.3.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.2.1.30\lib\net472\Exiled.Updater.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Mirror-Publicized">
       <HintPath>References\Mirror-Publicized.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>References\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>References\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

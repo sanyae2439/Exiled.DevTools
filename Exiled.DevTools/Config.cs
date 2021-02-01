@@ -9,10 +9,10 @@ namespace Exiled.DevTools
 		[Description("Indicates whether the plugin is enabled or not")]
 		public bool IsEnabled { get; set; } = true;
 
-		[Description("Ignored event names")]
-		public List<string> DisabledEvents { get; set; } = new List<string>() { "SyncingData" };
+		[Description("Ignored event names for logging")]
+		public List<string> DisabledLoggingEvents { get; set; } = new List<string>() { "SyncingData" };
 
-		[Description("Ignored Rpc names")]
-		public List<string> DisabledRpcs { get; set; } = new List<string>() { "SyncingData" };
+		[Description("Ignored network method names(Rpc,Cmd,Target) for logging")]
+		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() { "RpcBlinkTime", "CmdAltIsActive", "CmdSyncItem" };
 	}
 }
