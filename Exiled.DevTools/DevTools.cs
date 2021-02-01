@@ -38,8 +38,8 @@ namespace Exiled.DevTools
 		{
 			Instance = null;
 
-			AddEventHandlers();
-			RegistPatch();
+			RemoveEventHandlers();
+			UnRegistPatch();
 	
 			base.OnDisabled();
 		}
