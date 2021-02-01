@@ -13,6 +13,6 @@ namespace Exiled.DevTools
 		public List<string> DisabledLoggingEvents { get; set; } = new List<string>() { "SyncingData" };
 
 		[Description("Ignored network method names(Rpc,Cmd,Target) for logging")]
-		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() { "RpcBlinkTime", "CmdAltIsActive", "CmdSyncItem" };
+		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() { "RpcBlinkTime", "CmdAltIsActive", "CmdSyncItem", "CmdSyncData" };
 	}
 }
