@@ -111,12 +111,14 @@ namespace Exiled.DevTools
 			{
 				try
 				{
-					message += $"{propertyInfo.Name}({propertyInfo.PropertyType}) : {propertyInfo.GetValue(ev)}\n";
+					message += $"{propertyInfo.Name} : {propertyInfo.GetValue(ev)}\n";
 				}
 				catch(Exception e)
 				{
-					message += $"{propertyInfo.Name}({propertyInfo.PropertyType}) : Error[{e.Message}]\n";
+					message += $"{propertyInfo.Name} : Error[{e.Message}]\n";
 				}
+
+				if(DevTools.Instance.Config.DisabledLoggingClassNameForNest.Contains(propertyInfo.PropertyType.FullName)) continue;
 
 				if(propertyInfo.PropertyType.IsClass || (propertyInfo.PropertyType.IsValueType && !propertyInfo.PropertyType.IsPrimitive && !propertyInfo.PropertyType.IsEnum)) 
 				{
@@ -157,7 +159,15 @@ namespace Exiled.DevTools
 					if(isEnumerable && !isString)
 					{
 						int counter = 0;
-						foreach(var item in (IEnumerable)propertyInfo.GetValue(ev))
+						var enumerable = (IEnumerable)propertyInfo.GetValue(ev);
+
+						if(propertyInfo.PropertyType.IsGenericType)
+						{
+							var genericparam = propertyInfo.PropertyType.GetGenericArguments()[0];
+							var count = typeof(System.Linq.Enumerable).GetMethods().First(x => x.Name == nameof(System.Linq.Enumerable.Count) && x.IsStatic && x.GetParameters().Length == 1).MakeGenericMethod(genericparam);
+							message += $"    Length : {count.Invoke(null, new object[] { enumerable })}\n";
+						}
+						foreach(var item in enumerable)
 							message += $"    [{counter++}] : {item}\n";
 					}
 				}
