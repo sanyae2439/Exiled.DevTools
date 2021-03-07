@@ -159,15 +159,7 @@ namespace Exiled.DevTools
 					if(isEnumerable && !isString)
 					{
 						int counter = 0;
-						var enumerable = (IEnumerable)propertyInfo.GetValue(ev);
-
-						if(propertyInfo.PropertyType.IsGenericType)
-						{
-							var genericparam = propertyInfo.PropertyType.GetGenericArguments()[0];
-							var count = typeof(System.Linq.Enumerable).GetMethods().First(x => x.Name == nameof(System.Linq.Enumerable.Count) && x.IsStatic && x.GetParameters().Length == 1).MakeGenericMethod(genericparam);
-							message += $"    Length : {count.Invoke(null, new object[] { enumerable })}\n";
-						}
-						foreach(var item in enumerable)
+						foreach(var item in (IEnumerable)propertyInfo.GetValue(ev))
 							message += $"    [{counter++}] : {item}\n";
 					}
 				}
