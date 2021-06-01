@@ -18,7 +18,7 @@ namespace Exiled.DevTools
 		[Description("Ignored network method names(Rpc,Cmd,Target) for logging")]
 		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() { "RpcBlinkTime", "CmdAltIsActive", "CmdSyncItem", "CmdSyncData", "CmdChangeSpeedState", "CmdScp939Noise" };
 
-		[Description("Ignored nest output for logging (Must be Fullname")]
+		[Description("Ignored nest output for logging (Must be Fullname)")]
 		public List<string> DisabledLoggingClassNameForNest { get; set; } = new List<string>() { "Exiled.API.Features.Player" };
 	}
 }
