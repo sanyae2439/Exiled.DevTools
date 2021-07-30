@@ -94,7 +94,7 @@ namespace Exiled.DevTools
 		{
 			try
 			{
-				Harmony.UnpatchAll();
+				Harmony.UnpatchAll(Harmony.Id);
 				Harmony = null;
 			}
 			catch(Exception ex)
