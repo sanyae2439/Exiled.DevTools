@@ -140,21 +140,23 @@ namespace Exiled.DevTools
 								{
 									message += $"    {propertyInClass.Name} : {propertyInClass.GetValue(propertyInfo.GetValue(ev))}\n";
 								}
-								catch(Exception)
+								catch(Exception e)
 								{
-									message += $"    {propertyInClass.Name} : null\n";
+									message += $"    {propertyInClass.Name} : Exception({e.Message})\n";
 								}
 							}
 
 							foreach(var fieldInClass in propertyInfo.PropertyType.GetFields(_NestSearchFlags))
 							{
+								if(fieldInClass.Name.Contains("<")) continue;
+
 								try
 								{
 									message += $"    {fieldInClass.Name} : {fieldInClass.GetValue(propertyInfo.GetValue(ev))}\n";
 								}
-								catch(Exception)
+								catch(Exception e)
 								{
-									message += $"    {fieldInClass.Name} : null\n";
+									message += $"    {fieldInClass.Name} : Exception({e.Message})\n";
 								}
 							}
 						}
@@ -164,6 +166,9 @@ namespace Exiled.DevTools
 							int counter = 0;
 							foreach(var item in (IEnumerable)propertyInfo.GetValue(ev))
 								message += $"    [{counter++}] : {item}\n";
+
+							if(counter == 0)
+								message += $"    No items\n";
 						}
 					}
 				}

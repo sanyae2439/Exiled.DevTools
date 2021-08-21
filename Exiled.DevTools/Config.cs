@@ -16,9 +16,9 @@ namespace Exiled.DevTools
 		public List<string> DisabledLoggingEvents { get; set; } = new List<string>() { "SyncingData", "Blinking", "ChangingDurability", "UsingRadioBattery" };
 
 		[Description("Ignored network method names(Rpc,Cmd,Target) for logging")]
-		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() { "RpcBlinkTime", "CmdAltIsActive", "CmdSyncItem", "CmdSyncData", "CmdChangeSpeedState", "CmdScp939Noise" };
+		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() { "CmdAltIsActive", "CmdSyncData", "CmdChangeSpeedState", "CmdScp939Noise", "CmdSetTime" };
 
 		[Description("Ignored nest output for logging (Must be Fullname)")]
-		public List<string> DisabledLoggingClassNameForNest { get; set; } = new List<string>() { "Exiled.API.Features.Player" };
+		public List<string> DisabledLoggingClassNameForNest { get; set; } = new List<string>() { "Exiled.API.Features.Player", "UnityEngine.Vector3", "UnityEngine.Vector2", "UnityEngine.Quaternion" };
 	}
 }
