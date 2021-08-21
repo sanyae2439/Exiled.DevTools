@@ -1,18 +1,18 @@
-﻿using Exiled.API.Features;
+﻿using System;
+using Exiled.API.Features;
 using HarmonyLib;
 using Mirror;
 using Mirror.RemoteCalls;
 
 namespace Exiled.DevTools
 {
-	[HarmonyPatch(typeof(RemoteCallHelper), "GetInvokerForHash")]
+	[HarmonyPatch(typeof(RemoteCallHelper), "GetMethodHash")]
 	public static class CmdAndRpcLoggingPatch
 	{
-		public static void Postfix(Invoker invoker)
+		public static void Postfix(Type invokeClass, string methodName)
 		{
-			var methodname = invoker.invokeFunction.GetMethodName().Substring(15);
-			if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodname)) return;
-			Log.Debug($"[{methodname}]");
+			if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodName)) return;
+			Log.Debug($"[{methodName}]");
 		}
 	}
 }
