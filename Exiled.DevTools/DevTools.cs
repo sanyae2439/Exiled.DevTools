@@ -25,6 +25,7 @@ namespace Exiled.DevTools
 
 		private readonly Dictionary<EventInfo, Delegate> _DynamicHandlers = new Dictionary<EventInfo, Delegate>();
 		private const BindingFlags _NestSearchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+		private bool isHandlerAdded = false;
 
 		public override void OnEnabled()
 		{
@@ -48,7 +49,15 @@ namespace Exiled.DevTools
 
 		private void AddEventHandlers()
 		{
-			foreach(var eventClass in Events.Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
+			var EventsAssembly = Exiled.Loader.Loader.Plugins.FirstOrDefault(x => x.Name == "Exiled.Events");
+
+			if(EventsAssembly == null)
+			{
+				Log.Warn($"Exiled.Events not found. Skipping AddEventHandlers.");
+				return;
+			}
+
+			foreach(var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
 				foreach(EventInfo eventInfo in eventClass.GetEvents())
 				{
 					Delegate handler = null;
@@ -64,10 +73,14 @@ namespace Exiled.DevTools
 					eventInfo.AddEventHandler(null, handler);
 					this._DynamicHandlers.Add(eventInfo, handler);
 				}
+
+			isHandlerAdded = true;
 		}
 
 		private void RemoveEventHandlers()
 		{
+			if(!isHandlerAdded) return;
+
 			foreach(var eventClass in Events.Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
 				foreach(EventInfo eventInfo in eventClass.GetEvents())
 					if(this._DynamicHandlers.ContainsKey(eventInfo))
@@ -75,6 +88,8 @@ namespace Exiled.DevTools
 						eventInfo.RemoveEventHandler(null, this._DynamicHandlers[eventInfo]);
 						this._DynamicHandlers.Remove(eventInfo);
 					}
+
+			isHandlerAdded = false;
 		}
 
 		private void RegistPatch()
