@@ -18,7 +18,7 @@ namespace Exiled.DevTools
 		public override string Prefix => "exiled_devtools";
 		public override PluginPriority Priority => PluginPriority.Highest;
 		public override Version Version => new Version(Assembly.GetName().Version.Major, Assembly.GetName().Version.Minor, Assembly.GetName().Version.Build);
-		public override Version RequiredExiledVersion => new Version(2, 10, 0);
+		public override Version RequiredExiledVersion => new Version(3, 0, 0);
 
 		public static DevTools Instance { get; private set; }
 		public Harmony Harmony { get; private set; }
