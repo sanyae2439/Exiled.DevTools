@@ -39,10 +39,10 @@ namespace Exiled.DevTools
 
 		public override void OnDisabled()
 		{
-			Instance = null;
-
 			RemoveEventHandlers();
 			UnRegistPatch();
+
+			Instance = null;
 
 			base.OnDisabled();
 		}
