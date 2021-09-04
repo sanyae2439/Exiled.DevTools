@@ -11,6 +11,8 @@ namespace Exiled.DevTools
 	{
 		public static void Prefix(NetworkConnection __instance, NetworkReader reader, int channelId)
 		{
+			if(!DevTools.Instance.Config.LoggingNetworkMethods) return;
+
 			var newreader = NetworkReaderPool.GetReader(reader.buffer);
 			if(!MessagePacking.Unpack(newreader, out var key)) return;
 

@@ -11,6 +11,7 @@ namespace Exiled.DevTools
 	{
 		public static void Postfix(Type invokeClass, string methodName)
 		{
+			if(!DevTools.Instance.Config.LoggingNetworkMethods) return;
 			if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodName)) return;
 			Log.Debug($"[{methodName}]");
 		}

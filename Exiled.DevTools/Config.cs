@@ -12,6 +12,9 @@ namespace Exiled.DevTools
 		[Description("Indicates whether logging events args")]
 		public bool LoggingEventArgs { get; set; } = true;
 
+		[Description("Indicates whether logging network methods")]
+		public bool LoggingNetworkMethods { get; set; } = true;
+
 		[Description("Ignored event names for logging")]
 		public List<string> DisabledLoggingEvents { get; set; } = new List<string>() { "SyncingData", "Blinking", "ChangingDurability", "UsingRadioBattery" };
 

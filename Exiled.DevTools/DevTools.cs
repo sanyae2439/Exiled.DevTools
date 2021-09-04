@@ -123,7 +123,7 @@ namespace Exiled.DevTools
 			string eventname = ev.GetType().Name.Replace("EventArgs", string.Empty);
 			if(Instance.Config.DisabledLoggingEvents.Contains(eventname)) return;
 
-			string message = $"[{eventname}]\n";
+			string message = $"[On{eventname}]\n";
 			if(Instance.Config.LoggingEventArgs)
 			{
 				foreach(var propertyInfo in ev.GetType().GetProperties())
