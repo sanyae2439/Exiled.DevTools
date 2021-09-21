@@ -4,7 +4,7 @@ using Mirror;
 
 namespace DevTools
 {
-	[HarmonyPatch(typeof(NetworkServer), nameof(NetworkServer.UnpackAndInvoke))]
+	[HarmonyPatch(typeof(NetworkConnection), nameof(NetworkConnection.UnpackAndInvoke))]
 	public static class MessageLoggingPatch
 	{
 		public static void Prefix(NetworkReader reader)
