@@ -13,9 +13,9 @@ namespace Exiled.DevTools
 {
 	public sealed class DevTools : Plugin<Config>
 	{
-		public override string Name => "Exiled.DevTools";
+		public override string Name => "DevTools";
 		public override string Author => "sanyae2439";
-		public override string Prefix => "exiled_devtools";
+		public override string Prefix => "devtools";
 		public override PluginPriority Priority => PluginPriority.Highest;
 		public override Version Version => new Version(Assembly.GetName().Version.Major, Assembly.GetName().Version.Minor, Assembly.GetName().Version.Build);
 		public override Version RequiredExiledVersion => new Version(3, 0, 0);
