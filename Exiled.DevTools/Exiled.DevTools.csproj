@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DAC6A862-F645-4A77-91DB-288E749D0453}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Exiled.DevTools</RootNamespace>
-    <AssemblyName>Exiled.DevTools</AssemblyName>
+    <RootNamespace>DevTools</RootNamespace>
+    <AssemblyName>DevTools</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -53,35 +53,35 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.API, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.3.0.0-alpha.86\lib\net472\Exiled.API.dll</HintPath>
+      <HintPath>..\packages\EXILED.3.0.0-alpha.84\lib\net472\Exiled.API.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Bootstrap, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.3.0.0-alpha.86\lib\net472\Exiled.Bootstrap.dll</HintPath>
+      <HintPath>..\packages\EXILED.3.0.0-alpha.84\lib\net472\Exiled.Bootstrap.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.CreditTags, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.3.0.0-alpha.86\lib\net472\Exiled.CreditTags.dll</HintPath>
+      <HintPath>..\packages\EXILED.3.0.0-alpha.84\lib\net472\Exiled.CreditTags.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.CustomItems, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.3.0.0-alpha.86\lib\net472\Exiled.CustomItems.dll</HintPath>
+      <HintPath>..\packages\EXILED.3.0.0-alpha.84\lib\net472\Exiled.CustomItems.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Events, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.3.0.0-alpha.86\lib\net472\Exiled.Events.dll</HintPath>
+      <HintPath>..\packages\EXILED.3.0.0-alpha.84\lib\net472\Exiled.Events.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Loader, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.3.0.0-alpha.86\lib\net472\Exiled.Loader.dll</HintPath>
+      <HintPath>..\packages\EXILED.3.0.0-alpha.84\lib\net472\Exiled.Loader.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Permissions, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.3.0.0-alpha.86\lib\net472\Exiled.Permissions.dll</HintPath>
+      <HintPath>..\packages\EXILED.3.0.0-alpha.84\lib\net472\Exiled.Permissions.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Updater, Version=3.1.1.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.3.0.0-alpha.86\lib\net472\Exiled.Updater.dll</HintPath>
+      <HintPath>..\packages\EXILED.3.0.0-alpha.84\lib\net472\Exiled.Updater.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Mirror-Publicized">

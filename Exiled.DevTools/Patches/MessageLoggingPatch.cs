@@ -1,10 +1,8 @@
-﻿using System;
-using Exiled.API.Features;
+﻿using Exiled.API.Features;
 using HarmonyLib;
 using Mirror;
-using Mirror.RemoteCalls;
 
-namespace Exiled.DevTools
+namespace DevTools
 {
 	[HarmonyPatch(typeof(NetworkServer), nameof(NetworkServer.UnpackAndInvoke))]
 	public static class MessageLoggingPatch

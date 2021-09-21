@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using Exiled.API.Interfaces;
 
-namespace Exiled.DevTools
+namespace DevTools
 {
 	public class Config : IConfig
 	{
@@ -21,7 +21,7 @@ namespace Exiled.DevTools
 		[Description("Ignored network method names(Rpc,Cmd,Target,Message) for logging")]
 		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() { "SpawnMessage", "ObjectDestroyMessage", "NetworkPingMessage", "PositionMessage", "PositionMessage2D", "RotationMessage", "CmdAltIsActive", "CmdSyncData", "CmdChangeSpeedState", "CmdScp939Noise", "CmdSetTime", "RpcMakeSound" };
 
-		[Description("Ignored nest output for logging (Must be Fullname)")]
-		public List<string> DisabledLoggingClassNameForNest { get; set; } = new List<string>() { "Exiled.API.Features.Player", "UnityEngine.Vector3", "UnityEngine.Vector2", "UnityEngine.Quaternion" };
+		[Description("Class name to nest logging. (Must be Fullname)")]
+		public List<string> LoggingClassNameToNest { get; set; } = new List<string>();
 	}
 }

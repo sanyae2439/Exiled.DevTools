@@ -1,10 +1,9 @@
 ﻿using System;
 using Exiled.API.Features;
 using HarmonyLib;
-using Mirror;
 using Mirror.RemoteCalls;
 
-namespace Exiled.DevTools
+namespace DevTools
 {
 	[HarmonyPatch(typeof(RemoteCallHelper), "GetMethodHash")]
 	public static class CmdAndRpcLoggingPatch

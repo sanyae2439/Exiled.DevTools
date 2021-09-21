@@ -6,10 +6,11 @@ using System.Linq;
 using System.Reflection;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.Events;
 using HarmonyLib;
 using MonoMod.Utils;
 
-namespace Exiled.DevTools
+namespace DevTools
 {
 	public sealed class DevTools : Plugin<Config>
 	{
@@ -65,11 +66,11 @@ namespace Exiled.DevTools
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandler))
 							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments[0])
-							.CreateDelegate(typeof(Events.Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments[0]));
+							.CreateDelegate(typeof(Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments[0]));
 					else
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandlerForEmptyArgs))
-							.CreateDelegate<Events.Events.CustomEventHandler>();
+							.CreateDelegate<Events.CustomEventHandler>();
 					eventInfo.AddEventHandler(null, handler);
 					this._DynamicHandlers.Add(eventInfo, handler);
 				}
@@ -81,7 +82,7 @@ namespace Exiled.DevTools
 		{
 			if(!isHandlerAdded) return;
 
-			foreach(var eventClass in Events.Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
+			foreach(var eventClass in Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
 				foreach(EventInfo eventInfo in eventClass.GetEvents())
 					if(this._DynamicHandlers.ContainsKey(eventInfo))
 					{
@@ -130,14 +131,14 @@ namespace Exiled.DevTools
 				{
 					try
 					{
-						message += $"{propertyInfo.Name} : {propertyInfo.GetValue(ev)}\n";
+						message += $"  {propertyInfo.Name} : {propertyInfo.GetValue(ev)}\n";
 					}
 					catch(Exception e)
 					{
-						message += $"{propertyInfo.Name} : Error[{e.Message}]\n";
+						message += $"  {propertyInfo.Name} : Error[{e.Message}]\n";
 					}
 
-					if(DevTools.Instance.Config.DisabledLoggingClassNameForNest.Contains(propertyInfo.PropertyType.FullName)) continue;
+					if(!DevTools.Instance.Config.LoggingClassNameToNest.Contains(propertyInfo.PropertyType.FullName)) continue;
 
 					if(propertyInfo.PropertyType.IsClass || (propertyInfo.PropertyType.IsValueType && !propertyInfo.PropertyType.IsPrimitive && !propertyInfo.PropertyType.IsEnum))
 					{
@@ -191,6 +192,6 @@ namespace Exiled.DevTools
 			Log.Debug(message.TrimEnd('\n'));
 		}
 
-		public static void MessageHandlerForEmptyArgs(Events.Events.CustomEventHandler _) => Log.Debug($"[{new StackFrame(2).GetMethod().Name}]");
+		public static void MessageHandlerForEmptyArgs(Events.CustomEventHandler _) => Log.Debug($"[{new StackFrame(2).GetMethod().Name}]");
 	}
 }
