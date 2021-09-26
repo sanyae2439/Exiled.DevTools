@@ -43,7 +43,8 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="DevTools.cs" />
-    <Compile Include="Patches\CmdAndRpcLoggingPatch.cs" />
+    <Compile Include="Patches\ReceiveMethodLoggingPatch.cs" />
+    <Compile Include="Patches\SendingMethodLoggingPatch.cs" />
     <Compile Include="Patches\MessageLoggingPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -54,27 +55,35 @@
     </Reference>
     <Reference Include="Exiled.API, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-alpha.87\lib\net472\Exiled.API.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Bootstrap, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-alpha.87\lib\net472\Exiled.Bootstrap.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.CreditTags, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-alpha.87\lib\net472\Exiled.CreditTags.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.CustomItems, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-alpha.87\lib\net472\Exiled.CustomItems.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Events, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-alpha.87\lib\net472\Exiled.Events.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Loader, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-alpha.87\lib\net472\Exiled.Loader.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Permissions, Version=3.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-alpha.87\lib\net472\Exiled.Permissions.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Exiled.Updater, Version=3.1.1.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.3.0.0-alpha.87\lib\net472\Exiled.Updater.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Mirror-Publicized">
       <HintPath>References\Mirror-Publicized.dll</HintPath>
