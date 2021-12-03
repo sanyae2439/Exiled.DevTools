@@ -138,17 +138,17 @@ namespace DevTools
 						message += $"  {propertyInfo.Name} : Error[{e.Message}]\n";
 					}
 
-					if(!DevTools.Instance.Config.LoggingClassNameToNest.Contains(propertyInfo.PropertyType.FullName)) continue;
+					Type targetType = propertyInfo.GetValue(ev)?.GetType();
+					if(targetType == null || !DevTools.Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
 
-					if(propertyInfo.PropertyType.IsClass || (propertyInfo.PropertyType.IsValueType && !propertyInfo.PropertyType.IsPrimitive && !propertyInfo.PropertyType.IsEnum))
+					if(targetType.IsClass || (targetType.IsValueType && !targetType.IsPrimitive && !targetType.IsEnum))
 					{
-
-						bool isString = propertyInfo.PropertyType.Name == nameof(System.String);
+						bool isString = targetType.Name == nameof(System.String);
 						bool isEnumerable = propertyInfo.PropertyType.GetInterfaces().Any(t => t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
 						if(!isString && !isEnumerable)
 						{
-							foreach(var propertyInClass in propertyInfo.PropertyType.GetProperties(_NestSearchFlags))
+							foreach(var propertyInClass in targetType.GetProperties(_NestSearchFlags))
 							{
 								if(propertyInClass.GetIndexParameters().Length > 0) continue;
 
@@ -162,7 +162,7 @@ namespace DevTools
 								}
 							}
 
-							foreach(var fieldInClass in propertyInfo.PropertyType.GetFields(_NestSearchFlags))
+							foreach(var fieldInClass in targetType.GetFields(_NestSearchFlags))
 							{
 								if(fieldInClass.Name.Contains("<")) continue;
 
