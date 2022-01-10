@@ -20,7 +20,7 @@ namespace DevTools
 
 		public static void Prefix(MethodBase __originalMethod)
 		{
-			if(!DevTools.Instance.Config.LoggingNetworkMethods) return;
+			if(!DevTools.Instance.Config.LoggingNetworkMessages) return;
 			var messageName = __originalMethod.GetParameters()[0].ParameterType.Name;
 			if(DevTools.Instance.Config.DisabledLoggingNetworkMessages.Contains(messageName)) return;
 			Log.Debug($"[  Sending: {messageName}]");

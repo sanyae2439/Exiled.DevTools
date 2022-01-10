@@ -9,7 +9,7 @@ namespace DevTools
 	{
 		public static void Prefix(NetworkReader reader)
 		{
-			if(!DevTools.Instance.Config.LoggingNetworkMethods) return;
+			if(!DevTools.Instance.Config.LoggingNetworkMessages) return;
 
 			var newreader = NetworkReaderPool.GetReader(reader.buffer);
 			newreader.Position = reader.Position;
@@ -19,7 +19,7 @@ namespace DevTools
 			{
 				string methodName = networkMessageDelegate.Method.DeclaringType.GetGenericArguments()[0].Name;
 				if(methodName == "CommandMessage") return;
-				if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodName)) return;
+				if(DevTools.Instance.Config.DisabledLoggingNetworkMessages.Contains(methodName)) return;
 				Log.Debug($"[Receiving: {methodName}]");
 			}
 			NetworkReaderPool.Recycle(newreader);
