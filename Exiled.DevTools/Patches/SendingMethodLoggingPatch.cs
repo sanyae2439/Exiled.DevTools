@@ -11,7 +11,7 @@ namespace DevTools
 		{
 			if(!DevTools.Instance.Config.LoggingNetworkMethods) return;
 			if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodName)) return;
-			Log.Debug($"[{methodName}]");
+			Log.Debug($"[  Sending: {methodName}]");
 		}
 	}
 }

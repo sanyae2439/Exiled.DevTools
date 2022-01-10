@@ -124,7 +124,7 @@ namespace DevTools
 			string eventname = ev.GetType().Name.Replace("EventArgs", string.Empty);
 			if(Instance.Config.DisabledLoggingEvents.Contains(eventname)) return;
 
-			string message = $"[On{eventname}]\n";
+			string message = $"[    Event: On{eventname}]\n";
 			if(Instance.Config.LoggingEventArgs)
 			{
 				foreach(var propertyInfo in ev.GetType().GetProperties())
@@ -192,6 +192,6 @@ namespace DevTools
 			Log.Debug(message.TrimEnd('\n'));
 		}
 
-		public static void MessageHandlerForEmptyArgs(Events.CustomEventHandler _) => Log.Debug($"[{new StackFrame(2).GetMethod().Name}]");
+		public static void MessageHandlerForEmptyArgs(Events.CustomEventHandler _) => Log.Debug($"[    Event: {new StackFrame(2).GetMethod().Name}]");
 	}
 }

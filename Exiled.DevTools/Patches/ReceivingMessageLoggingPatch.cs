@@ -5,7 +5,7 @@ using Mirror;
 namespace DevTools
 {
 	[HarmonyPatch(typeof(NetworkConnection), nameof(NetworkConnection.UnpackAndInvoke))]
-	public static class MessageLoggingPatch
+	public static class ReceivingMessageLoggingPatch
 	{
 		public static void Prefix(NetworkReader reader)
 		{
@@ -20,7 +20,7 @@ namespace DevTools
 				string methodName = networkMessageDelegate.Method.DeclaringType.GetGenericArguments()[0].Name;
 				if(methodName == "CommandMessage") return;
 				if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodName)) return;
-				Log.Debug($"[{methodName}]");
+				Log.Debug($"[Receiving: {methodName}]");
 			}
 			NetworkReaderPool.Recycle(newreader);
 		}
