@@ -1,7 +1,7 @@
 # Exiled.DevTools
 Logging tools for __developers__.
 
-Required [EXILED](https://github.com/Exiled-Team/EXILED) 2.10.0+.
+Required [EXILED](https://github.com/Exiled-Team/EXILED) 3.0.0+.
 
 # Configs
 ```yaml
