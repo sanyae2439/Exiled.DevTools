@@ -131,7 +131,7 @@ namespace DevTools
 				{
 					try
 					{
-						message += $"  {propertyInfo.Name} : {propertyInfo.GetValue(ev)}\n";
+						message += $"  {propertyInfo.Name} : {propertyInfo.GetValue(ev) ?? "null"}\n";
 					}
 					catch(Exception e)
 					{
@@ -139,52 +139,52 @@ namespace DevTools
 					}
 
 					Type targetType = propertyInfo.GetValue(ev)?.GetType();
-					if(targetType == null || !DevTools.Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
+					if(targetType == null) continue;
+
+					if(DevTools.Instance.Config.LoggingIenumerables
+						&& propertyInfo.PropertyType.GetInterfaces().Any(t => t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+						&& targetType.Name != nameof(System.String))
+					{
+						int counter = 0;
+						foreach(var item in (IEnumerable)propertyInfo.GetValue(ev))
+							message += $"    [{counter++}] : {item ?? "null"}\n";
+
+						if(counter == 0)
+							message += $"    No items\n";
+
+						continue;
+					}
+
+					if(!DevTools.Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
 
 					if(targetType.IsClass || (targetType.IsValueType && !targetType.IsPrimitive && !targetType.IsEnum))
 					{
-						bool isString = targetType.Name == nameof(System.String);
-						bool isEnumerable = propertyInfo.PropertyType.GetInterfaces().Any(t => t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>));
-
-						if(!isString && !isEnumerable)
+						foreach(var propertyInClass in targetType.GetProperties(_NestSearchFlags))
 						{
-							foreach(var propertyInClass in targetType.GetProperties(_NestSearchFlags))
-							{
-								if(propertyInClass.GetIndexParameters().Length > 0) continue;
+							if(propertyInClass.GetIndexParameters().Length > 0) continue;
 
-								try
-								{
-									message += $"    {propertyInClass.Name} : {propertyInClass.GetValue(propertyInfo.GetValue(ev))}\n";
-								}
-								catch(Exception e)
-								{
-									message += $"    {propertyInClass.Name} : Exception({e.Message})\n";
-								}
+							try
+							{
+								message += $"    {propertyInClass.Name} : {propertyInClass.GetValue(propertyInfo.GetValue(ev)) ?? "null"}\n";
 							}
-
-							foreach(var fieldInClass in targetType.GetFields(_NestSearchFlags))
+							catch(Exception e)
 							{
-								if(fieldInClass.Name.Contains("<")) continue;
-
-								try
-								{
-									message += $"    {fieldInClass.Name} : {fieldInClass.GetValue(propertyInfo.GetValue(ev))}\n";
-								}
-								catch(Exception e)
-								{
-									message += $"    {fieldInClass.Name} : Exception({e.Message})\n";
-								}
+								message += $"    {propertyInClass.Name} : Exception({e.Message})\n";
 							}
 						}
 
-						if(isEnumerable && !isString)
+						foreach(var fieldInClass in targetType.GetFields(_NestSearchFlags))
 						{
-							int counter = 0;
-							foreach(var item in (IEnumerable)propertyInfo.GetValue(ev))
-								message += $"    [{counter++}] : {item}\n";
+							if(fieldInClass.Name.Contains("<")) continue;
 
-							if(counter == 0)
-								message += $"    No items\n";
+							try
+							{
+								message += $"    {fieldInClass.Name} : {fieldInClass.GetValue(propertyInfo.GetValue(ev)) ?? "null"}\n";
+							}
+							catch(Exception e)
+							{
+								message += $"    {fieldInClass.Name} : Exception({e.Message})\n";
+							}
 						}
 					}
 				}

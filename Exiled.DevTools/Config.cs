@@ -12,6 +12,9 @@ namespace DevTools
 		[Description("Indicates whether logging events args")]
 		public bool LoggingEventArgs { get; set; } = true;
 
+		[Description("Indicates whether logging IEnumerables")]
+		public bool LoggingIenumerables { get; set; } = true;
+
 		[Description("Indicates whether logging network methods")]
 		public bool LoggingNetworkMethods { get; set; } = true;
 
