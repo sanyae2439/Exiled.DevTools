@@ -38,4 +38,6 @@ devtools:
   - RotationMessage
   # Class name to nest logging. (Must be Fullname)
   logging_class_name_to_nest: []
+  # Event name to preventing.
+  preventing_event_name: []
 ```
