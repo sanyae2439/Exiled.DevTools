@@ -121,10 +121,18 @@ namespace DevTools
 
 		public static void MessageHandler<T>(T ev) where T : EventArgs
 		{
-			string eventname = ev.GetType().Name.Replace("EventArgs", string.Empty);
+			Type eventType = ev.GetType();
+			string eventname = eventType.Name.Replace("EventArgs", string.Empty);		
+
+			if(Instance.Config.PreventingEventName.Contains(eventname))
+			{
+				Log.Warn($" [  Prevent: {eventname}]");
+				eventType.GetProperty("IsAllowed").SetValue(ev, false);
+			}
+
 			if(Instance.Config.DisabledLoggingEvents.Contains(eventname)) return;
 
-			string message = $"[    Event: On{eventname}]\n";
+			string message = $"[    Event: {eventname}]\n";
 			if(Instance.Config.LoggingEventArgs)
 			{
 				foreach(var propertyInfo in ev.GetType().GetProperties())

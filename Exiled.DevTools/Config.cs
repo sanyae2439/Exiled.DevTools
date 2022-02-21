@@ -49,5 +49,8 @@ namespace DevTools
 
 		[Description("Class name to nest logging. (Must be Fullname)")]
 		public List<string> LoggingClassNameToNest { get; set; } = new List<string>();
+
+		[Description("Event name to preventing.")]
+		public List<string> PreventingEventName { get; set; } = new List<string>();
 	}
 }

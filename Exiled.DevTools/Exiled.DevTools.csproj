@@ -111,4 +111,7 @@
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetPath)" "$(AppData)\EXILED\Plugins" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
