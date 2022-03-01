@@ -12,16 +12,18 @@ namespace DevTools
 	{
 		public static IEnumerable<MethodBase> TargetMethods()
 		{
-			var genericMethod = typeof(NetworkConnection).GetMethods().First(x => x.IsGenericMethod && x.Name == nameof(NetworkConnection.Send));		
+			MethodInfo genericMethod = typeof(MessagePacking).GetMethods().First(x => x.IsGenericMethod && x.Name == nameof(MessagePacking.Pack));
 			foreach(var messageType in typeof(ServerConsole).Assembly.GetTypes().Where(x => x.IsValueType && x.GetInterface(nameof(NetworkMessage)) != null))
 				yield return genericMethod.MakeGenericMethod(messageType);
-			yield break;
+			foreach(var messageType in typeof(NetworkServer).Assembly.GetTypes().Where(x => x.IsValueType && x.GetInterface(nameof(NetworkMessage)) != null))
+				yield return genericMethod.MakeGenericMethod(messageType);
 		}
 
 		public static void Prefix(MethodBase __originalMethod)
 		{
 			if(!DevTools.Instance.Config.LoggingNetworkMessages) return;
 			var messageName = __originalMethod.GetParameters()[0].ParameterType.Name;
+			if(messageName == "CommandMessage" || messageName == "RpcMessage") return;
 			if(DevTools.Instance.Config.DisabledLoggingNetworkMessages.Contains(messageName)) return;
 			Log.Debug($"[  Sending: {messageName}]");
 		}

@@ -40,7 +40,9 @@ namespace DevTools
 		public List<string> DisabledLoggingNetworkMessages { get; set; } = new List<string>() {
 			"SpawnMessage",
 			"ObjectDestroyMessage",
+			"UpdateVarsMessage",
 			"NetworkPingMessage",
+			"NetworkPongMessage",
 			"PositionMessage",
 			"PositionMessage2D",
 			"PositionPPMMessage",
