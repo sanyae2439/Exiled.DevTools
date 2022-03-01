@@ -2,7 +2,7 @@
 using HarmonyLib;
 using Mirror;
 
-namespace DevTools
+namespace DevTools.Patches
 {
 	[HarmonyPatch(typeof(NetworkConnection), nameof(NetworkConnection.UnpackAndInvoke))]
 	public static class ReceivingMessageLoggingPatch

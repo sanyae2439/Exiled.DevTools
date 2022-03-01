@@ -2,7 +2,7 @@
 using HarmonyLib;
 using Mirror.RemoteCalls;
 
-namespace DevTools
+namespace DevTools.Patches
 {
 	[HarmonyPatch(typeof(RemoteCallHelper), nameof(RemoteCallHelper.GetMethodHash))]
 	public static class SendingMethodLoggingPatch

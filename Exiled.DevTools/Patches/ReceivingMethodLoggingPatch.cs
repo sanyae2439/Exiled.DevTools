@@ -3,7 +3,7 @@ using HarmonyLib;
 using Mirror;
 using Mirror.RemoteCalls;
 
-namespace DevTools
+namespace DevTools.Patches
 {
 	[HarmonyPatch(typeof(RemoteCallHelper), nameof(RemoteCallHelper.GetCommandInfo))]
 	public static class ReceivingMethodLoggingPatch

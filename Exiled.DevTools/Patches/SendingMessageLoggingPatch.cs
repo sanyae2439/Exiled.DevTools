@@ -5,7 +5,7 @@ using Exiled.API.Features;
 using HarmonyLib;
 using Mirror;
 
-namespace DevTools
+namespace DevTools.Patches
 {
 	[HarmonyPatch]
 	public static class SendingMessageLoggingPatch
