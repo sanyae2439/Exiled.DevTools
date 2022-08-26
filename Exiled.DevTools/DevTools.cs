@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Exiled.API.Enums;
+using Exiled.API.Features;
+using Exiled.Events;
+using Exiled.Events.EventArgs.Interfaces;
+using HarmonyLib;
+using MonoMod.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Exiled.API.Enums;
-using Exiled.API.Features;
-using Exiled.Events;
-using HarmonyLib;
-using MonoMod.Utils;
 
 namespace DevTools
 {
@@ -52,27 +53,27 @@ namespace DevTools
 		{
 			var EventsAssembly = Exiled.Loader.Loader.Plugins.FirstOrDefault(x => x.Name == "Exiled.Events");
 
-			if(EventsAssembly == null)
+			if (EventsAssembly is null)
 			{
 				Log.Warn($"Exiled.Events not found. Skipping AddEventHandlers.");
 				return;
 			}
 
-			foreach(var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
-				foreach(EventInfo eventInfo in eventClass.GetEvents())
+			foreach (Type eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
+				foreach (EventInfo eventInfo in eventClass.GetEvents())
 				{
 					Delegate handler = null;
-					if(eventInfo.EventHandlerType.GenericTypeArguments.Any())
+					if (eventInfo.EventHandlerType.GenericTypeArguments.Any())
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandler))
 							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments[0])
-							.CreateDelegate(typeof(Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments[0]));
+							.CreateDelegate(typeof(Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
 					else
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandlerForEmptyArgs))
 							.CreateDelegate<Events.CustomEventHandler>();
 					eventInfo.AddEventHandler(null, handler);
-					this._DynamicHandlers.Add(eventInfo, handler);
+					_DynamicHandlers.Add(eventInfo, handler);
 				}
 
 			isHandlerAdded = true;
@@ -80,14 +81,14 @@ namespace DevTools
 
 		private void RemoveEventHandlers()
 		{
-			if(!isHandlerAdded) return;
+			if (!isHandlerAdded) return;
 
-			foreach(var eventClass in Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
-				foreach(EventInfo eventInfo in eventClass.GetEvents())
-					if(this._DynamicHandlers.ContainsKey(eventInfo))
+			foreach (Type eventClass in Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
+				foreach (EventInfo eventInfo in eventClass.GetEvents())
+					if (_DynamicHandlers.ContainsKey(eventInfo))
 					{
-						eventInfo.RemoveEventHandler(null, this._DynamicHandlers[eventInfo]);
-						this._DynamicHandlers.Remove(eventInfo);
+						eventInfo.RemoveEventHandler(null, _DynamicHandlers[eventInfo]);
+						_DynamicHandlers.Remove(eventInfo);
 					}
 
 			isHandlerAdded = false;
@@ -97,10 +98,10 @@ namespace DevTools
 		{
 			try
 			{
-				Harmony = new Harmony(this.Name + DateTime.Now.Ticks);
+				Harmony = new Harmony(Name + DateTime.Now.Ticks);
 				Harmony.PatchAll();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Error($"Patching Failed : {ex}");
 			}
@@ -113,83 +114,84 @@ namespace DevTools
 				Harmony.UnpatchAll(Harmony.Id);
 				Harmony = null;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Error($"Unpatching Failed : {ex}");
 			}
 		}
 
-		public static void MessageHandler<T>(T ev) where T : EventArgs
+		public static void MessageHandler<T>(T ev)
+			where T : IExiledEvent
 		{
 			Type eventType = ev.GetType();
-			string eventname = eventType.Name.Replace("EventArgs", string.Empty);		
+			string eventname = eventType.Name.Replace("EventArgs", string.Empty);
 
-			if(Instance.Config.PreventingEventName.Contains(eventname))
+			if (Instance.Config.PreventingEventName.Contains(eventname))
 			{
 				Log.Warn($" [  Prevent: {eventname}]");
 				eventType.GetProperty("IsAllowed").SetValue(ev, false);
 			}
 
-			if(Instance.Config.DisabledLoggingEvents.Contains(eventname)) return;
+			if (Instance.Config.DisabledLoggingEvents.Contains(eventname)) return;
 
 			string message = $"[    Event: {eventname}]\n";
-			if(Instance.Config.LoggingEventArgs)
+			if (Instance.Config.LoggingEventArgs)
 			{
-				foreach(var propertyInfo in ev.GetType().GetProperties())
+				foreach (var propertyInfo in ev.GetType().GetProperties())
 				{
 					try
 					{
 						message += $"  {propertyInfo.Name} : {propertyInfo.GetValue(ev) ?? "null"}\n";
 					}
-					catch(Exception e)
+					catch (Exception e)
 					{
 						message += $"  {propertyInfo.Name} : Error[{e.Message}]\n";
 					}
 
 					Type targetType = propertyInfo.GetValue(ev)?.GetType();
-					if(targetType == null) continue;
+					if (targetType == null) continue;
 
-					if(DevTools.Instance.Config.LoggingIenumerables
+					if (Instance.Config.LoggingIenumerables
 						&& propertyInfo.PropertyType.GetInterfaces().Any(t => t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-						&& targetType.Name != nameof(System.String))
+						&& targetType.Name != nameof(String))
 					{
 						int counter = 0;
-						foreach(var item in (IEnumerable)propertyInfo.GetValue(ev))
+						foreach (var item in (IEnumerable)propertyInfo.GetValue(ev))
 							message += $"    [{counter++}] : {item ?? "null"}\n";
 
-						if(counter == 0)
+						if (counter == 0)
 							message += $"    No items\n";
 
 						continue;
 					}
 
-					if(!DevTools.Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
+					if (!Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
 
-					if(targetType.IsClass || (targetType.IsValueType && !targetType.IsPrimitive && !targetType.IsEnum))
+					if (targetType.IsClass || (targetType.IsValueType && !targetType.IsPrimitive && !targetType.IsEnum))
 					{
-						foreach(var propertyInClass in targetType.GetProperties(_NestSearchFlags))
+						foreach (var propertyInClass in targetType.GetProperties(_NestSearchFlags))
 						{
-							if(propertyInClass.GetIndexParameters().Length > 0) continue;
+							if (propertyInClass.GetIndexParameters().Length > 0) continue;
 
 							try
 							{
 								message += $"    {propertyInClass.Name} : {propertyInClass.GetValue(propertyInfo.GetValue(ev)) ?? "null"}\n";
 							}
-							catch(Exception e)
+							catch (Exception e)
 							{
 								message += $"    {propertyInClass.Name} : Exception({e.Message})\n";
 							}
 						}
 
-						foreach(var fieldInClass in targetType.GetFields(_NestSearchFlags))
+						foreach (var fieldInClass in targetType.GetFields(_NestSearchFlags))
 						{
-							if(fieldInClass.Name.Contains("<")) continue;
+							if (fieldInClass.Name.Contains("<")) continue;
 
 							try
 							{
 								message += $"    {fieldInClass.Name} : {fieldInClass.GetValue(propertyInfo.GetValue(ev)) ?? "null"}\n";
 							}
-							catch(Exception e)
+							catch (Exception e)
 							{
 								message += $"    {fieldInClass.Name} : Exception({e.Message})\n";
 							}
