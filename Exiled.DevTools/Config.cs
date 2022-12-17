@@ -9,7 +9,10 @@ namespace DevTools
 		[Description("Indicates whether the plugin is enabled or not")]
 		public bool IsEnabled { get; set; } = true;
 
-		[Description("Indicates whether logging events args")]
+        [Description("Indicate if you want to see Debug log")]
+        public bool Debug { get; set; } = true;
+
+        [Description("Indicates whether logging events args")]
 		public bool LoggingEventArgs { get; set; } = true;
 
 		[Description("Indicates whether logging IEnumerables")]
