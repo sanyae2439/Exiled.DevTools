@@ -8,10 +8,11 @@
     <OutputType>Library</OutputType>
     <RootNamespace>DevTools</RootNamespace>
     <AssemblyName>DevTools</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -58,37 +59,33 @@
       <HintPath>References\Assembly-CSharp-Publicized.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Exiled.API, Version=4.2.2.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.API.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Exiled.API, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\louismonneyronpc\AppData\Roaming\EXILED\Plugins\dependencies\Exiled.API.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Bootstrap, Version=4.2.2.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.Bootstrap.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Exiled.CreditTags, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\louismonneyronpc\AppData\Roaming\EXILED\Plugins\Exiled.CreditTags.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.CreditTags, Version=4.2.2.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.CreditTags.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Exiled.CustomItems, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\louismonneyronpc\AppData\Roaming\EXILED\Plugins\Exiled.CustomItems.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.CustomItems, Version=4.2.2.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.CustomItems.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Exiled.CustomRoles, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\louismonneyronpc\AppData\Roaming\EXILED\Plugins\Exiled.CustomRoles.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.CustomRoles, Version=4.2.2.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.CustomRoles.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Exiled.Events, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\louismonneyronpc\AppData\Roaming\EXILED\Plugins\Exiled.Events.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Events, Version=4.2.2.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.Events.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Exiled.Loader, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\louismonneyronpc\AppData\Roaming\SCP Secret Laboratory\PluginAPI\plugins\global\Exiled.Loader.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Loader, Version=4.2.2.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.Loader.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.Permissions, Version=4.2.2.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.Permissions.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Exiled.Permissions, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\louismonneyronpc\AppData\Roaming\EXILED\Plugins\Exiled.Permissions.dll</HintPath>
     </Reference>
     <Reference Include="Exiled.Updater, Version=3.1.1.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.4.2.2\lib\net472\Exiled.Updater.dll</HintPath>
@@ -98,9 +95,7 @@
       <HintPath>References\Mirror-Publicized.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System">
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>References\UnityEngine.dll</HintPath>
       <Private>False</Private>

@@ -26,7 +26,9 @@ namespace DevTools
 
 		[Description("Ignored event names for logging")]
 		public List<string> DisabledLoggingEvents { get; set; } = new List<string>() { 
-			"UsingRadioBattery"
+			"UsingRadioBattery",
+            "Transmitting",
+            "SpawningItem",
 		};
 
 		[Description("Ignored network method names(Rpc,Cmd,Target) for logging")]
@@ -36,8 +38,9 @@ namespace DevTools
 			"CmdSendEncryptedQuery",
 			"CmdSetTime", 
 			"CmdUpdateCameraPosition", 
-			"RpcUpdateCameraPostion" 
-		};
+			"RpcUpdateCameraPostion",
+            "RpcMakeSound",
+        };
 
 		[Description("Ignored NetworkMessage names for logging")]
 		public List<string> DisabledLoggingNetworkMessages { get; set; } = new List<string>() {
@@ -49,8 +52,16 @@ namespace DevTools
 			"PositionMessage",
 			"PositionMessage2D",
 			"PositionPPMMessage",
-			"RotationMessage"
-		};
+			"RotationMessage",
+			"FpcPositionMessage",
+            "FpcFromClientMessage",
+            "SubroutineMessage",
+            "StatMessage",
+            "VoiceMessage",
+            "TransmitterPositionMessage",
+            "ElevatorSyncMsg",
+            "FpcOverrideMessage",
+        };
 
 		[Description("Class name to nest logging. (Must be Fullname)")]
 		public List<string> LoggingClassNameToNest { get; set; } = new List<string>();
