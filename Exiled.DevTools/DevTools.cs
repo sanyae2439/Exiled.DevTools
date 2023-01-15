@@ -51,7 +51,7 @@ namespace DevTools
 
 		private void AddEventHandlers()
 		{
-			var EventsAssembly = Exiled.Loader.Loader.Plugins.FirstOrDefault(x => x.Name == "Exiled.Events");
+			IPlugin<IConfig> EventsAssembly = Exiled.Loader.Loader.Plugins.FirstOrDefault(x => x.Name == "Exiled.Events");
 
 			if (EventsAssembly is null)
 			{
@@ -71,7 +71,7 @@ namespace DevTools
 					else
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandlerForEmptyArgs))
-							.CreateDelegate<Events.CustomEventHandler>();
+							.CreateDelegate(typeof(Events.CustomEventHandler<>));
 					eventInfo.AddEventHandler(null, handler);
 					_DynamicHandlers.Add(eventInfo, handler);
 				}
