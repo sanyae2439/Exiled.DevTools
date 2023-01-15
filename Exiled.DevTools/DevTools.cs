@@ -65,7 +65,7 @@ namespace DevTools
 					if(eventInfo.EventHandlerType.GenericTypeArguments.Any())
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandler))
-							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments[0])
+							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
 							.CreateDelegate(typeof(Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
 					else
 						handler = typeof(DevTools)
