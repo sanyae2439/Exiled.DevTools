@@ -9,6 +9,9 @@ namespace DevTools
 		[Description("Indicates whether the plugin is enabled or not")]
 		public bool IsEnabled { get; set; } = true;
 
+		[Description("Indicates whether the debug message is enabled or not")]
+		public bool Debug { get; set; } = true;
+
 		[Description("Indicates whether logging events args")]
 		public bool LoggingEventArgs { get; set; } = true;
 
@@ -22,18 +25,21 @@ namespace DevTools
 		public bool LoggingNetworkMessages { get; set; } = true;
 
 		[Description("Ignored event names for logging")]
-		public List<string> DisabledLoggingEvents { get; set; } = new List<string>() { 
-			"UsingRadioBattery"
+		public List<string> DisabledLoggingEvents { get; set; } = new List<string>() {
+			"UsingRadioBattery",
+			"Transmitting",
+			"SpawningItem"
 		};
 
 		[Description("Ignored network method names(Rpc,Cmd,Target) for logging")]
-		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() { 
+		public List<string> DisabledLoggingNetworkMethods { get; set; } = new List<string>() {
 			"TargetReplyEncrypted",
 			"TargetSyncGameplayData",
 			"CmdSendEncryptedQuery",
-			"CmdSetTime", 
-			"CmdUpdateCameraPosition", 
-			"RpcUpdateCameraPostion" 
+			"CmdSetTime",
+			"CmdUpdateCameraPosition",
+			"RpcUpdateCameraPostion",
+			"RpcMakeSound"
 		};
 
 		[Description("Ignored NetworkMessage names for logging")]
@@ -46,7 +52,14 @@ namespace DevTools
 			"PositionMessage",
 			"PositionMessage2D",
 			"PositionPPMMessage",
-			"RotationMessage"
+			"RotationMessage",
+			"FpcFromClientMessage",
+			"SubroutineMessage",
+			"StatMessage",
+			"VoiceMessage",
+			"TransmitterPositionMessage",
+			"ElevatorSyncMsg",
+			"FpcOverrideMessage"
 		};
 
 		[Description("Class name to nest logging. (Must be Fullname)")]

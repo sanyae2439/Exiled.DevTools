@@ -7,8 +7,8 @@ using System.Reflection;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events;
+using Exiled.Events.EventArgs.Interfaces;
 using HarmonyLib;
-using MonoMod.Utils;
 
 namespace DevTools
 {
@@ -66,13 +66,13 @@ namespace DevTools
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandler))
 							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments[0])
-							.CreateDelegate(typeof(Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments[0]));
+							.CreateDelegate(typeof(Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
 					else
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandlerForEmptyArgs))
-							.CreateDelegate<Events.CustomEventHandler>();
+							.CreateDelegate(typeof(Events.CustomEventHandler));
 					eventInfo.AddEventHandler(null, handler);
-					this._DynamicHandlers.Add(eventInfo, handler);
+					_DynamicHandlers.Add(eventInfo, handler);
 				}
 
 			isHandlerAdded = true;
@@ -119,7 +119,7 @@ namespace DevTools
 			}
 		}
 
-		public static void MessageHandler<T>(T ev) where T : EventArgs
+		public static void MessageHandler<T>(T ev) where T : IExiledEvent
 		{
 			Type eventType = ev.GetType();
 			string eventname = eventType.Name.Replace("EventArgs", string.Empty);		
@@ -200,6 +200,6 @@ namespace DevTools
 			Log.Debug(message.TrimEnd('\n'));
 		}
 
-		public static void MessageHandlerForEmptyArgs(Events.CustomEventHandler _) => Log.Debug($"[    Event: {new StackFrame(2).GetMethod().Name}]");
+		public static void MessageHandlerForEmptyArgs() => Log.Debug($"[    Event: {new StackFrame(2).GetMethod().Name}]");
 	}
 }
