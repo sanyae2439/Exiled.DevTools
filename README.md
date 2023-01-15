@@ -21,9 +21,6 @@ devtools:
   # Ignored event names for logging
   disabled_logging_events:
   - UsingRadioBattery
-  # Ignored event names for logging
-  disabled_logging_events:
-  - UsingRadioBattery
   - Transmitting
   - SpawningItem
   # Ignored network method names(Rpc,Cmd,Target) for logging
