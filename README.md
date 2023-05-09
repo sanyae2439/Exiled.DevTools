@@ -6,11 +6,11 @@ Required [EXILED](https://github.com/Exiled-Team/EXILED) 6.0.0+.
 # Configs
 ```yaml
 devtools:
-# Indicates whether the plugin is enabled or not
+  # Indicates whether the plugin is enabled or not
   is_enabled: true
+  # Indicates whether the debug message is enabled or not
+  debug: true
   # Indicates whether logging events args
-  Debug: true
-  # Indicate if you want to see Debug log
   logging_event_args: true
   # Indicates whether logging IEnumerables
   logging_ienumerables: true
@@ -36,12 +36,13 @@ devtools:
   disabled_logging_network_messages:
   - SpawnMessage
   - ObjectDestroyMessage
+  - UpdateVarsMessage
   - NetworkPingMessage
+  - NetworkPongMessage
   - PositionMessage
   - PositionMessage2D
   - PositionPPMMessage
   - RotationMessage
-  - FpcPositionMessage
   - FpcFromClientMessage
   - SubroutineMessage
   - StatMessage
@@ -49,7 +50,6 @@ devtools:
   - TransmitterPositionMessage
   - ElevatorSyncMsg
   - FpcOverrideMessage
-
   # Class name to nest logging. (Must be Fullname)
   logging_class_name_to_nest: []
   # Event name to preventing.

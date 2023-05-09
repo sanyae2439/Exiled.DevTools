@@ -14,7 +14,7 @@ namespace DevTools.Patches
 			var newreader = NetworkReaderPool.GetReader(reader.buffer);
 			newreader.Position = reader.Position;
 
-			if(!MessagePacking.Unpack(newreader, out ushort key,out int length)) return;
+			if(!MessagePacking.Unpack(newreader, out var key, out _)) return;
 			if(NetworkServer.handlers.TryGetValue(key, out var networkMessageDelegate) && networkMessageDelegate.Method.DeclaringType.IsGenericType)
 			{
 				string methodName = networkMessageDelegate.Method.DeclaringType.GetGenericArguments()[0].Name;
