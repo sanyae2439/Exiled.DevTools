@@ -5,14 +5,14 @@ using Mirror.RemoteCalls;
 
 namespace DevTools.Patches
 {
-	[HarmonyPatch(typeof(RemoteCallHelper), nameof(RemoteCallHelper.GetCommandInfo))]
+	[HarmonyPatch(typeof(RemoteProcedureCalls), nameof(RemoteProcedureCalls.CommandRequiresAuthority))]
 	public static class ReceivingMethodLoggingPatch
 	{
-		public static void Postfix(int cmdHash)
+		public static void Postfix(ushort cmdHash)
 		{
 			if(!DevTools.Instance.Config.LoggingNetworkMethods) return;
-			if(!RemoteCallHelper.GetInvokerForHash(cmdHash, MirrorInvokeType.Command, out Invoker invoker)) return;
-			var methodName = invoker.invokeFunction.GetMethodName().Substring(15);
+			if(!RemoteProcedureCalls.GetInvokerForHash(cmdHash, RemoteCallType.Command, out Invoker invoker)) return;
+			var methodName = invoker.function.GetMethodName().Substring(15);
 			if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodName)) return;
 			Log.Debug($"[Receiving: {methodName}]");
 		}

@@ -39,9 +39,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="DevTools.cs" />
     <Compile Include="Patches\SendingMessageLoggingPatch.cs" />
@@ -51,61 +48,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.2.2\lib\net48\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp-Publicized">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Assembly-CSharp-Publicized.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\CommandSystem.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.API, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Exiled.API.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.CreditTags, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Exiled.CreditTags.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.CustomItems, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Exiled.CustomItems.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.CustomRoles, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Exiled.CustomRoles.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.Events, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Exiled.Events.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.Loader, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Exiled.Loader.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.Permissions, Version=6.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Exiled.Permissions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Exiled.Updater, Version=3.1.1.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\Exiled.Updater.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mirror-Publicized">
-      <HintPath>References\Mirror-Publicized.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NorthwoodLib, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\NorthwoodLib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="PluginAPI, Version=12.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\EXILED.6.0.0-beta.22\lib\net48\PluginAPI.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Mirror-Publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\References\Mirror-Publicized.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>
@@ -118,6 +63,14 @@
       <HintPath>References\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="EXILED">
+      <Version>6.0.0-beta.22</Version>
+    </PackageReference>
+    <PackageReference Include="Lib.Harmony">
+      <Version>2.2.2</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
