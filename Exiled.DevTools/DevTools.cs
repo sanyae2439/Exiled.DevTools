@@ -79,14 +79,16 @@ namespace DevTools
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandler))
 							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
-							.CreateDelegate(typeof(CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+							.CreateDelegate(typeof(CustomEventHandler<>)
+							.MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
 					}
 					else
 					{
 						Log.Warn(propertyInfo.Name);
 						continue;
 					}
-                    eventInfo.AddEventHandler(null, handler);
+                    MethodInfo addMethod = eventInfo.GetAddMethod(true);
+                    addMethod.Invoke(null, new[] { handler });
                     _DynamicHandlers.Add(eventInfo, handler);
                 }
 
