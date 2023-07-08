@@ -102,9 +102,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EXILED">
-      <Version>6.0.0-beta.22</Version>
-    </PackageReference>
     <PackageReference Include="Lib.Harmony">
       <Version>2.2.2</Version>
     </PackageReference>
