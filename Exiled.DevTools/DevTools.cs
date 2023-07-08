@@ -62,45 +62,38 @@ namespace DevTools
 				Log.Warn($"Exiled.Events not found. Skipping AddEventHandlers.");
 				return;
 			}
-			foreach(var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
-                foreach (PropertyInfo propertyInfo in eventClass.GetAllProperties())
-                {
-					try
-                    {
-                        Delegate handler = null;
-                        EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1));
+			foreach (var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
+				foreach (PropertyInfo propertyInfo in eventClass.GetAllProperties())
+				{
+					Delegate handler = null;
+					EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1));
 
-                        if (propertyInfo.PropertyType == typeof(Event))
-                        {
-                            handler = new CustomEventHandler(MessageHandlerForEmptyArgs);
-
-                            MethodInfo addMethod = eventInfo.DeclaringType.GetMethod($"add_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic);
-                            addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
-                        }
-                        else if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
-                        {
-                            handler = typeof(DevTools)
-                                .GetMethod(nameof(DevTools.MessageHandler))
-                                .MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
-                                .CreateDelegate(typeof(CustomEventHandler<>)
-                                .MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
-
-                            MethodInfo addMethod = eventInfo.GetAddMethod(true);
-                            addMethod.Invoke(propertyInfo.GetValue(null), new[] { handler });
-                        }
-                        else
-                        {
-                            Log.Warn(propertyInfo.Name);
-                            continue;
-                        }
-
-                        _DynamicHandlers.Add(new Tuple<EventInfo, Delegate>(eventInfo, handler));
-                    }
-                    catch (Exception ex) 
+					if (propertyInfo.PropertyType == typeof(Event))
 					{
-						Log.Error(ex);
+						handler = new CustomEventHandler(MessageHandlerForEmptyArgs);
+
+						MethodInfo addMethod = eventInfo.DeclaringType.GetMethod($"add_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic);
+						addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
 					}
-                }
+					else if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
+					{
+						handler = typeof(DevTools)
+							.GetMethod(nameof(DevTools.MessageHandler))
+							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
+							.CreateDelegate(typeof(CustomEventHandler<>)
+							.MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+
+						MethodInfo addMethod = eventInfo.GetAddMethod(true);
+						addMethod.Invoke(propertyInfo.GetValue(null), new[] { handler });
+					}
+					else
+					{
+						Log.Warn(propertyInfo.Name);
+						continue;
+					}
+
+					_DynamicHandlers.Add(new Tuple<EventInfo, Delegate>(eventInfo, handler));
+				}
 
             isHandlerAdded = true;
 		}
