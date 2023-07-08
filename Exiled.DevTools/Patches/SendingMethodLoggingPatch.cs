@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace DevTools.Patches
 {
-	/*[HarmonyPatch(typeof(RemoteCallHelper), nameof(RemoteCallHelper.GetMethodHash))]
+	//[HarmonyPatch(typeof(RemoteProcedureCalls), nameof(RemoteProcedureCalls.GetMethodHash))]
 	public static class SendingMethodLoggingPatch
 	{
 		public static void Postfix(string methodName)
@@ -12,5 +12,5 @@ namespace DevTools.Patches
 			if(DevTools.Instance.Config.DisabledLoggingNetworkMethods.Contains(methodName)) return;
 			Log.Debug($"[  Sending: {methodName}]");
 		}
-	}*/
+	}
 }

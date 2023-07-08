@@ -12,7 +12,7 @@ namespace DevTools.Patches
 	{
 		public static IEnumerable<MethodBase> TargetMethods()
 		{
-			MethodInfo genericMethod = typeof(MessagePacking).GetMethods().First(x => x.IsGenericMethod && x.Name == nameof(MessagePacking.Pack));
+			MethodInfo genericMethod = typeof(NetworkMessages).GetMethods().First(x => x.IsGenericMethod && x.Name == nameof(NetworkMessages.Pack));
 			foreach(var messageType in typeof(ServerConsole).Assembly.GetTypes().Where(x => x.IsValueType && x.GetInterface(nameof(NetworkMessage)) != null))
 				yield return genericMethod.MakeGenericMethod(messageType);
 			foreach(var messageType in typeof(NetworkServer).Assembly.GetTypes().Where(x => x.IsValueType && x.GetInterface(nameof(NetworkMessage)) != null))
