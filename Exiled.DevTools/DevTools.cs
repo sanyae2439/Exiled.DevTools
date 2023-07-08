@@ -29,8 +29,8 @@ namespace DevTools
 		public static DevTools Instance { get; private set; }
 		public Harmony Harmony { get; private set; }
 
-		private readonly Dictionary<EventInfo, Delegate> _DynamicHandlers = new Dictionary<EventInfo, Delegate>();
-		private const BindingFlags _NestSearchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+        private readonly List<Tuple<EventInfo, Delegate>> _DynamicHandlers = new List<Tuple<EventInfo, Delegate>>();
+        private const BindingFlags _NestSearchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 		private bool isHandlerAdded = false;
 
 		public override void OnEnabled()
@@ -65,32 +65,41 @@ namespace DevTools
 			foreach(var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
                 foreach (PropertyInfo propertyInfo in eventClass.GetAllProperties())
                 {
-                    Delegate handler = null;
-                    EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1));
+					try
+                    {
+                        Delegate handler = null;
+                        EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1));
 
-					if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event))
-					{
-						handler = typeof(DevTools)
-							.GetMethod(nameof(DevTools.MessageHandlerForEmptyArgs))
-							.CreateDelegate(typeof(CustomEventHandler));
-                        eventInfo.AddEventHandler(null, handler);
+                        if (propertyInfo.PropertyType == typeof(Event))
+                        {
+                            handler = new CustomEventHandler(MessageHandlerForEmptyArgs);
+
+                            MethodInfo addMethod = eventInfo.DeclaringType.GetMethod($"add_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic);
+                            addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
+                        }
+                        else if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
+                        {
+                            handler = typeof(DevTools)
+                                .GetMethod(nameof(DevTools.MessageHandler))
+                                .MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
+                                .CreateDelegate(typeof(CustomEventHandler<>)
+                                .MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+
+                            MethodInfo addMethod = eventInfo.GetAddMethod(true);
+                            addMethod.Invoke(propertyInfo.GetValue(null), new[] { handler });
+                        }
+                        else
+                        {
+                            Log.Warn(propertyInfo.Name);
+                            continue;
+                        }
+
+                        _DynamicHandlers.Add(new Tuple<EventInfo, Delegate>(eventInfo, handler));
                     }
-					else if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
+                    catch (Exception ex) 
 					{
-						handler = typeof(DevTools)
-							.GetMethod(nameof(DevTools.MessageHandler))
-							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
-							.CreateDelegate(typeof(CustomEventHandler<>)
-							.MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
-                        MethodInfo addMethod = eventInfo.GetAddMethod(true);
-                        addMethod.Invoke(propertyInfo.GetValue(null), new[] { handler });
-                    }
-                    else
-					{
-						Log.Warn(propertyInfo.Name);
-						continue;
+						Log.Error(ex);
 					}
-                    _DynamicHandlers.Add(eventInfo, handler);
                 }
 
             isHandlerAdded = true;
@@ -100,10 +109,25 @@ namespace DevTools
 		{
 			if(!isHandlerAdded) return;
 
-            foreach (KeyValuePair<EventInfo, Delegate> handler in _DynamicHandlers)
-                handler.Key.RemoveEventHandler(null, handler.Value);
+            for (int i = 0; i < _DynamicHandlers.Count; i++)
+			{
+				Tuple<EventInfo, Delegate> tuple = _DynamicHandlers[i];
+                EventInfo eventInfo = tuple.Item1;
+                Delegate handler = tuple.Item2;
 
-            isHandlerAdded = false;
+                if (eventInfo.DeclaringType != null)
+				{
+					MethodInfo removeMethod = eventInfo.DeclaringType.GetMethod($"remove_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic);
+					removeMethod.Invoke(null, new object[] { handler });
+				}
+				else
+				{
+					MethodInfo removeMethod = eventInfo.GetRemoveMethod(true);
+					removeMethod.Invoke(null, new[] { handler });
+				}
+				_DynamicHandlers.Remove(tuple);
+            }
+			isHandlerAdded = false;
 		}
 
 		private void RegistPatch()
