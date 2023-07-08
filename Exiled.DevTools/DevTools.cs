@@ -73,7 +73,8 @@ namespace DevTools
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandlerForEmptyArgs))
 							.CreateDelegate(typeof(CustomEventHandler));
-					}
+                        eventInfo.AddEventHandler(null, handler);
+                    }
 					else if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
 					{
 						handler = typeof(DevTools)
@@ -81,14 +82,14 @@ namespace DevTools
 							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
 							.CreateDelegate(typeof(CustomEventHandler<>)
 							.MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
-					}
-					else
+                        MethodInfo addMethod = eventInfo.GetAddMethod(true);
+                        addMethod.Invoke(propertyInfo.GetValue(null), new[] { handler });
+                    }
+                    else
 					{
 						Log.Warn(propertyInfo.Name);
 						continue;
 					}
-                    MethodInfo addMethod = eventInfo.GetAddMethod(true);
-                    addMethod.Invoke(null, new[] { handler });
                     _DynamicHandlers.Add(eventInfo, handler);
                 }
 
