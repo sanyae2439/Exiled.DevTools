@@ -4,11 +4,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events;
 using Exiled.Events.EventArgs.Interfaces;
+using Exiled.Events.EventArgs.Map;
+using Exiled.Events.EventArgs.Server;
+using Exiled.Events.Features;
 using HarmonyLib;
+using Utf8Json.Internal;
 
 namespace DevTools
 {
@@ -59,45 +64,66 @@ namespace DevTools
 			}
 
 			foreach(var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
-				foreach(EventInfo eventInfo in eventClass.GetEvents())
+                foreach (PropertyInfo propertyInfo in eventClass.GetAllProperties())
 				{
-					Delegate handler = null;
-					if(eventInfo.EventHandlerType.GenericTypeArguments.Any())
-						handler = typeof(DevTools)
+					if (propertyInfo.GetValue(null) is Event @event)
+					{
+						@event += MessageHandlerForEmptyArgs;
+					}
+					else if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
+					{
+						MethodInfo methodInfo = propertyInfo.PropertyType.GetMethod("Subscribe", (BindingFlags)(-1));
+                        EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1));
+                        Delegate handler = typeof(DevTools)
+                            .GetMethod(nameof(DevTools.MessageHandler))
+                            .MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
+                            .CreateDelegate(typeof(CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+                        methodInfo.Invoke(propertyInfo.GetValue(null), new object[] { handler });
+
+						// This work with only the event that are already Registered
+                        /*
+						EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1));
+						Delegate handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandler))
 							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
-							.CreateDelegate(typeof(Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+							.CreateDelegate(typeof(CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+                        eventInfo.AddEventHandler(null, handler);*/
+                    }
 					else
-						handler = typeof(DevTools)
-							.GetMethod(nameof(DevTools.MessageHandlerForEmptyArgs))
-							.CreateDelegate(typeof(Events.CustomEventHandler));
-					eventInfo.AddEventHandler(null, handler);
-					_DynamicHandlers.Add(eventInfo, handler);
-				}
+					{
+						Log.Warn(propertyInfo.Name);
+					}
+                }
 
-			isHandlerAdded = true;
+            isHandlerAdded = true;
 		}
 
 		private void RemoveEventHandlers()
 		{
 			if(!isHandlerAdded) return;
+            var EventsAssembly = Exiled.Loader.Loader.Plugins.FirstOrDefault(x => x.Name == "Exiled.Events");
 
-			foreach(var eventClass in Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
-				foreach(EventInfo eventInfo in eventClass.GetEvents())
-					if(this._DynamicHandlers.ContainsKey(eventInfo))
-					{
-						eventInfo.RemoveEventHandler(null, this._DynamicHandlers[eventInfo]);
-						this._DynamicHandlers.Remove(eventInfo);
-					}
+            foreach (var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
+                foreach (PropertyInfo propertyInfo in eventClass.GetAllProperties())
+                {
+                    if (propertyInfo.GetValue(null) is Event @event)
+                    {
+                        @event -= MessageHandlerForEmptyArgs;
+                    }
+                    else if (propertyInfo.GetValue(null) is Event<IExiledEvent> @evente)
+                    {
+                        @evente -= MessageHandler;
+                    }
+                }
 
-			isHandlerAdded = false;
+            isHandlerAdded = false;
 		}
 
 		private void RegistPatch()
 		{
 			try
 			{
-				Harmony = new Harmony(this.Name + DateTime.Now.Ticks);
+				Harmony = new Harmony(Name + DateTime.Now.Ticks);
 				Harmony.PatchAll();
 			}
 			catch(Exception ex)
@@ -120,17 +146,18 @@ namespace DevTools
 		}
 
 		public static void MessageHandler<T>(T ev) where T : IExiledEvent
-		{
+        {
 			Type eventType = ev.GetType();
 			string eventname = eventType.Name.Replace("EventArgs", string.Empty);		
 
-			if(Instance.Config.PreventingEventName.Contains(eventname))
+			if(Instance.Config.PreventingEventName.Contains(eventname) && ev is IDeniableEvent evdeniable)
 			{
 				Log.Warn($" [  Prevent: {eventname}]");
-				eventType.GetProperty("IsAllowed").SetValue(ev, false);
+				evdeniable.IsAllowed = false;
 			}
 
-			if(Instance.Config.DisabledLoggingEvents.Contains(eventname)) return;
+			if(Instance.Config.DisabledLoggingEvents.Contains(eventname)) 
+				return;
 
 			string message = $"[    Event: {eventname}]\n";
 			if(Instance.Config.LoggingEventArgs)
@@ -149,7 +176,7 @@ namespace DevTools
 					Type targetType = propertyInfo.GetValue(ev)?.GetType();
 					if(targetType == null) continue;
 
-					if(DevTools.Instance.Config.LoggingIenumerables
+					if(Instance.Config.LoggingIenumerables
 						&& propertyInfo.PropertyType.GetInterfaces().Any(t => t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
 						&& targetType.Name != nameof(System.String))
 					{
@@ -163,7 +190,7 @@ namespace DevTools
 						continue;
 					}
 
-					if(!DevTools.Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
+					if(!Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
 
 					if(targetType.IsClass || (targetType.IsValueType && !targetType.IsPrimitive && !targetType.IsEnum))
 					{
