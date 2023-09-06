@@ -4,7 +4,7 @@ using Mirror.RemoteCalls;
 
 namespace DevTools.Patches
 {
-	[HarmonyPatch(typeof(RemoteCallHelper), nameof(RemoteCallHelper.GetMethodHash))]
+	//[HarmonyPatch(typeof(RemoteProcedureCalls), nameof(RemoteProcedureCalls.GetMethodHash))]
 	public static class SendingMethodLoggingPatch
 	{
 		public static void Postfix(string methodName)
