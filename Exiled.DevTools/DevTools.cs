@@ -4,11 +4,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events;
 using Exiled.Events.EventArgs.Interfaces;
+using Exiled.Events.EventArgs.Map;
+using Exiled.Events.EventArgs.Server;
+using Exiled.Events.Features;
 using HarmonyLib;
+using Utf8Json.Internal;
 
 namespace DevTools
 {
@@ -19,13 +24,13 @@ namespace DevTools
 		public override string Prefix => "devtools";
 		public override PluginPriority Priority => PluginPriority.Highest;
 		public override Version Version => new Version(Assembly.GetName().Version.Major, Assembly.GetName().Version.Minor, Assembly.GetName().Version.Build);
-		public override Version RequiredExiledVersion => new Version(7, 0, 0);
+		public override Version RequiredExiledVersion => new Version(8, 2, 0);
 
 		public static DevTools Instance { get; private set; }
 		public Harmony Harmony { get; private set; }
 
-		private readonly Dictionary<EventInfo, Delegate> _DynamicHandlers = new Dictionary<EventInfo, Delegate>();
-		private const BindingFlags _NestSearchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+        private readonly List<Tuple<EventInfo, Delegate>> _DynamicHandlers = new List<Tuple<EventInfo, Delegate>>();
+        private const BindingFlags _NestSearchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 		private bool isHandlerAdded = false;
 
 		public override void OnEnabled()
@@ -57,39 +62,64 @@ namespace DevTools
 				Log.Warn($"Exiled.Events not found. Skipping AddEventHandlers.");
 				return;
 			}
-
-			foreach(var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
-				foreach(EventInfo eventInfo in eventClass.GetEvents())
+			foreach (var eventClass in EventsAssembly.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
+				foreach (PropertyInfo propertyInfo in eventClass.GetAllProperties())
 				{
 					Delegate handler = null;
-					if(eventInfo.EventHandlerType.GenericTypeArguments.Any())
+					EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1));
+
+					if (propertyInfo.PropertyType == typeof(Event))
+					{
+						handler = new CustomEventHandler(MessageHandlerForEmptyArgs);
+
+						MethodInfo addMethod = eventInfo.DeclaringType.GetMethod($"add_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic);
+						addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
+					}
+					else if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
+					{
 						handler = typeof(DevTools)
 							.GetMethod(nameof(DevTools.MessageHandler))
 							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
-							.CreateDelegate(typeof(Events.CustomEventHandler<>).MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+							.CreateDelegate(typeof(CustomEventHandler<>)
+							.MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+
+						MethodInfo addMethod = eventInfo.GetAddMethod(true);
+						addMethod.Invoke(propertyInfo.GetValue(null), new[] { handler });
+					}
 					else
-						handler = typeof(DevTools)
-							.GetMethod(nameof(DevTools.MessageHandlerForEmptyArgs))
-							.CreateDelegate(typeof(Events.CustomEventHandler));
-					eventInfo.AddEventHandler(null, handler);
-					_DynamicHandlers.Add(eventInfo, handler);
+					{
+						Log.Warn(propertyInfo.Name);
+						continue;
+					}
+
+					_DynamicHandlers.Add(new Tuple<EventInfo, Delegate>(eventInfo, handler));
 				}
 
-			isHandlerAdded = true;
+            isHandlerAdded = true;
 		}
 
 		private void RemoveEventHandlers()
 		{
 			if(!isHandlerAdded) return;
 
-			foreach(var eventClass in Events.Instance.Assembly.GetTypes().Where(x => x.Namespace == "Exiled.Events.Handlers"))
-				foreach(EventInfo eventInfo in eventClass.GetEvents())
-					if(this._DynamicHandlers.ContainsKey(eventInfo))
-					{
-						eventInfo.RemoveEventHandler(null, this._DynamicHandlers[eventInfo]);
-						this._DynamicHandlers.Remove(eventInfo);
-					}
+            for (int i = 0; i < _DynamicHandlers.Count; i++)
+			{
+				Tuple<EventInfo, Delegate> tuple = _DynamicHandlers[i];
+                EventInfo eventInfo = tuple.Item1;
+                Delegate handler = tuple.Item2;
 
+                if (eventInfo.DeclaringType != null)
+				{
+					MethodInfo removeMethod = eventInfo.DeclaringType.GetMethod($"remove_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic);
+					removeMethod.Invoke(null, new object[] { handler });
+				}
+				else
+				{
+					MethodInfo removeMethod = eventInfo.GetRemoveMethod(true);
+					removeMethod.Invoke(null, new[] { handler });
+				}
+				_DynamicHandlers.Remove(tuple);
+            }
 			isHandlerAdded = false;
 		}
 
@@ -97,7 +127,7 @@ namespace DevTools
 		{
 			try
 			{
-				Harmony = new Harmony(this.Name + DateTime.Now.Ticks);
+				Harmony = new Harmony(Name + DateTime.Now.Ticks);
 				Harmony.PatchAll();
 			}
 			catch(Exception ex)
@@ -120,17 +150,18 @@ namespace DevTools
 		}
 
 		public static void MessageHandler<T>(T ev) where T : IExiledEvent
-		{
+        {
 			Type eventType = ev.GetType();
 			string eventname = eventType.Name.Replace("EventArgs", string.Empty);		
 
-			if(Instance.Config.PreventingEventName.Contains(eventname))
+			if(Instance.Config.PreventingEventName.Contains(eventname) && ev is IDeniableEvent evdeniable)
 			{
 				Log.Warn($" [  Prevent: {eventname}]");
-				eventType.GetProperty("IsAllowed").SetValue(ev, false);
+				evdeniable.IsAllowed = false;
 			}
 
-			if(Instance.Config.DisabledLoggingEvents.Contains(eventname)) return;
+			if(Instance.Config.DisabledLoggingEvents.Contains(eventname)) 
+				return;
 
 			string message = $"[    Event: {eventname}]\n";
 			if(Instance.Config.LoggingEventArgs)
@@ -149,7 +180,7 @@ namespace DevTools
 					Type targetType = propertyInfo.GetValue(ev)?.GetType();
 					if(targetType == null) continue;
 
-					if(DevTools.Instance.Config.LoggingIenumerables
+					if(Instance.Config.LoggingIenumerables
 						&& propertyInfo.PropertyType.GetInterfaces().Any(t => t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
 						&& targetType.Name != nameof(System.String))
 					{
@@ -163,7 +194,7 @@ namespace DevTools
 						continue;
 					}
 
-					if(!DevTools.Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
+					if(!Instance.Config.LoggingClassNameToNest.Contains(targetType.FullName)) continue;
 
 					if(targetType.IsClass || (targetType.IsValueType && !targetType.IsPrimitive && !targetType.IsEnum))
 					{
