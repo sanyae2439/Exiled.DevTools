@@ -24,7 +24,7 @@ namespace DevTools
 		public override string Prefix => "devtools";
 		public override PluginPriority Priority => PluginPriority.Highest;
 		public override Version Version => new Version(Assembly.GetName().Version.Major, Assembly.GetName().Version.Minor, Assembly.GetName().Version.Build);
-		public override Version RequiredExiledVersion => new Version(7, 0, 0);
+		public override Version RequiredExiledVersion => new Version(8, 2, 0);
 
 		public static DevTools Instance { get; private set; }
 		public Harmony Harmony { get; private set; }
