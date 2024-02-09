@@ -59,8 +59,11 @@ namespace DevTools
 			"VoiceMessage",
 			"TransmitterPositionMessage",
 			"ElevatorSyncMsg",
-			"FpcOverrideMessage"
-		};
+			"FpcOverrideMessage",
+            "TimeSnapshotMessage",
+            "EntityStateMessage",
+            "FpcPositionMessage"
+        };
 
 		[Description("Class name to nest logging. (Must be Fullname)")]
 		public List<string> LoggingClassNameToNest { get; set; } = new List<string>();
