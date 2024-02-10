@@ -231,6 +231,6 @@ namespace DevTools
 			Log.Debug(message.TrimEnd('\n'));
 		}
 
-		public static void MessageHandlerForEmptyArgs() => Log.Debug($"[    Event: {new StackFrame(2).GetMethod().Name}]");
+		public static void MessageHandlerForEmptyArgs() => Log.Debug($"[    Event: {new StackFrame(3).GetMethod().Name}]");
 	}
 }
