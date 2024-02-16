@@ -27,6 +27,7 @@ namespace DevTools
 		[Description("Ignored event names for logging")]
 		public List<string> DisabledLoggingEvents { get; set; } = new List<string>() {
 			"UsingRadioBattery",
+			"UsingRadioPickupBattery",
 			"Transmitting",
 			"SpawningItem"
 		};
