@@ -37,23 +37,14 @@ namespace DevTools
 			"TargetReplyEncrypted",
 			"TargetSyncGameplayData",
 			"CmdSendEncryptedQuery",
-			"CmdSetTime",
-			"CmdUpdateCameraPosition",
-			"RpcUpdateCameraPostion",
-			"RpcMakeSound"
-		};
+        };
 
 		[Description("Ignored NetworkMessage names for logging")]
 		public List<string> DisabledLoggingNetworkMessages { get; set; } = new List<string>() {
 			"SpawnMessage",
 			"ObjectDestroyMessage",
-			"UpdateVarsMessage",
 			"NetworkPingMessage",
 			"NetworkPongMessage",
-			"PositionMessage",
-			"PositionMessage2D",
-			"PositionPPMMessage",
-			"RotationMessage",
 			"FpcFromClientMessage",
 			"SubroutineMessage",
 			"StatMessage",
