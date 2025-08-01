@@ -28,7 +28,7 @@ namespace DevTools
 		public static DevTools Instance { get; private set; }
 		public Harmony Harmony { get; private set; }
 
-        private readonly List<Tuple<EventInfo, Delegate>> _DynamicHandlers = new List<Tuple<EventInfo, Delegate>>();
+        private readonly List<(IExiledEvent @event, Delegate handler)> _DynamicHandlers = new();
         private const BindingFlags _NestSearchFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 		private bool isHandlerAdded = false;
 
@@ -65,33 +65,41 @@ namespace DevTools
 				foreach (PropertyInfo propertyInfo in eventClass.GetAllProperties())
 				{
 					Delegate handler = null;
-					EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1));
+                    if (propertyInfo.GetValue(null) is not IExiledEvent @event)
+                    {
+                        Log.Warn("Properety find inside the events class but is not an event: " + propertyInfo.Name);
+                        continue;
+                    }
 
-					if (propertyInfo.PropertyType == typeof(Event))
+                    if (@event is Event simpleEvent)
 					{
-						handler = new CustomEventHandler(MessageHandlerForEmptyArgs);
-
-						MethodInfo addMethod = eventInfo.DeclaringType.GetMethod($"add_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic);
-						addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
-					}
+                        // No idea if you can do a cast like (CustomEventHandler)MessageHandlerForEmptyArgs
+                        CustomEventHandler customEvent = MessageHandlerForEmptyArgs;
+                        simpleEvent.Subscribe(customEvent);
+						handler = customEvent;
+                    }
 					else if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
 					{
-						handler = typeof(DevTools)
-							.GetMethod(nameof(DevTools.MessageHandler))
-							.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments)
-							.CreateDelegate(typeof(CustomEventHandler<>)
-							.MakeGenericType(eventInfo.EventHandlerType.GenericTypeArguments));
+                        // Need to use reflection, no non-genreic interface existe to subsribe non-generic event handler
+                        handler = typeof(DevTools)
+                            .GetMethod(nameof(DevTools.MessageHandler))
+                            .MakeGenericMethod(propertyInfo.PropertyType.GenericTypeArguments)
+                            .CreateDelegate(typeof(CustomEventHandler<>)
+                            .MakeGenericType(propertyInfo.PropertyType.GenericTypeArguments));
 
-						MethodInfo addMethod = eventInfo.GetAddMethod(true);
-						addMethod.Invoke(propertyInfo.GetValue(null), new[] { handler });
+                        MethodInfo subscribeMethod = propertyInfo.PropertyType.GetMethod(
+							nameof(Event</*dummy type*/int>.Subscribe),
+							new Type[] { handler.GetType() });
+
+                        subscribeMethod.Invoke(@event, new[] { handler });
 					}
 					else
 					{
-						Log.Warn(propertyInfo.Name);
+						Log.Warn("Unknow type of event: " + propertyInfo.Name);
 						continue;
 					}
 
-					_DynamicHandlers.Add(new Tuple<EventInfo, Delegate>(eventInfo, handler));
+					_DynamicHandlers.Add((@event, handler));
 				}
 
             isHandlerAdded = true;
@@ -103,21 +111,20 @@ namespace DevTools
 
             for (int i = 0; i < _DynamicHandlers.Count; i++)
 			{
-				Tuple<EventInfo, Delegate> tuple = _DynamicHandlers[i];
-                EventInfo eventInfo = tuple.Item1;
-                Delegate handler = tuple.Item2;
+                (IExiledEvent @event, Delegate handler) = _DynamicHandlers[i];
 
-                if (eventInfo.DeclaringType != null)
+                if (@event is Event simpleEvent)
 				{
-					MethodInfo removeMethod = eventInfo.DeclaringType.GetMethod($"remove_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic);
-					removeMethod.Invoke(null, new object[] { handler });
+					simpleEvent.Unsubscribe(handler as CustomEventHandler);
 				}
-				else
-				{
-					MethodInfo removeMethod = eventInfo.GetRemoveMethod(true);
-					removeMethod.Invoke(null, new[] { handler });
+                else
+                {
+                    MethodInfo unsubscribeMethod = @event.GetType().GetMethod(
+                           nameof(Event</*dummy type*/int>.Unsubscribe),
+                           new Type[] { handler.GetType() });
+                    unsubscribeMethod.Invoke(@event, new[] { handler });
 				}
-				_DynamicHandlers.Remove(tuple);
+				_DynamicHandlers.RemoveAt(i);
             }
 			isHandlerAdded = false;
 		}
