@@ -1,9 +1,10 @@
 ﻿using Exiled.API.Features;
 using HarmonyLib;
+using Mirror.RemoteCalls;
 
 namespace DevTools.Patches
 {
-	//[HarmonyPatch(typeof(RemoteProcedureCalls), nameof(RemoteProcedureCalls.GetMethodHash))]
+	[HarmonyPatch(typeof(RemoteProcedureCalls), nameof(RemoteProcedureCalls.GetDelegate))]
 	public static class SendingMethodLoggingPatch
 	{
 		public static void Postfix(string methodName)

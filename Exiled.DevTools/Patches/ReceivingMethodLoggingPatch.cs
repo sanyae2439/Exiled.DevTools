@@ -5,7 +5,7 @@ using Mirror.RemoteCalls;
 
 namespace DevTools.Patches
 {
-	[HarmonyPatch(typeof(RemoteProcedureCalls), nameof(RemoteProcedureCalls.CommandRequiresAuthority))]
+	[HarmonyPatch(typeof(RemoteProcedureCalls), nameof(RemoteProcedureCalls.GetInvokerForHash))]
 	public static class ReceivingMethodLoggingPatch
 	{
 		public static void Postfix(ushort cmdHash)
