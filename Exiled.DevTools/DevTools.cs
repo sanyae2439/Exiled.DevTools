@@ -23,8 +23,6 @@ namespace DevTools
 		public override string Author => "sanyae2439";
 		public override string Prefix => "devtools";
 		public override PluginPriority Priority => PluginPriority.Highest;
-		public override Version Version => new Version(Assembly.GetName().Version.Major, Assembly.GetName().Version.Minor, Assembly.GetName().Version.Build);
-
 		public static DevTools Instance { get; private set; }
 		public Harmony Harmony { get; private set; }
 
